@@ -8,6 +8,9 @@
 import SwiftUI
 import PhotosUI
 import Firebase
+import FirebaseFirestore
+import FirebaseStorage
+import FirebaseFirestoreSwift
 
 struct LoginView: View {
     @State private var email: String = ""
@@ -87,8 +90,9 @@ struct LoginView: View {
         Task {
             do {
                 try await Auth.auth().sendPasswordReset(withEmail: email)
+                print("link sent")
             } catch {
-                
+                await setError(error)
             }
         }
     }
@@ -111,6 +115,8 @@ struct RegisterView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showImagePicker: Bool = false
     @State private var photoItem: PhotosPickerItem?
+    @State private var errorMessage: String = ""
+    @State private var showError: Bool = false
     var body: some View {
         VStack() {
             Text("Let's Register")
@@ -157,6 +163,7 @@ struct RegisterView: View {
                 }
             }
         }
+        .alert(errorMessage, isPresented: $showError, actions: {})
     }
     
     @ViewBuilder
@@ -207,7 +214,7 @@ struct RegisterView: View {
             
 
             Button {
-                
+                registerUser()
             } label: {
                 Text("Sign up")
                     .foregroundColor(.white)
@@ -215,8 +222,40 @@ struct RegisterView: View {
                     .FillView(.black)
             }
             .padding(.top, 10)
+            .disableWithOpacity(username == "" || userBio == "" || email == "" || password == "" || userProfilePicData == nil )
         }
     }
+    
+    func registerUser() {
+        Task {
+            do {
+                try await Auth.auth().createUser(withEmail: email, password: password)
+                guard let userUID = Auth.auth().currentUser?.uid else { return }
+                guard let imageData = userProfilePicData else { return }
+                let storageRef = Storage.storage().reference().child("Profile_Images").child(userUID)
+                let _ = try await storageRef.putDataAsync(imageData)
+                let downloadURL = try await storageRef.downloadURL()
+                
+                let user = User(username: username, userBio: userBio, userBioLink: userBioLink, UserUID: userUID, userEmail: email, userProfileURL: downloadURL)
+                
+                let _ = try Firestore.firestore().collection("Users").document(userUID).setData(from: user, completion: { error in
+                    if error == nil {
+                        print("Saved Succesfully")
+                    }
+                })
+            } catch {
+                await setError(error)
+            }
+        }
+    }
+    
+    func setError(_ error: Error) async {
+        await MainActor.run(body: {
+            errorMessage = error.localizedDescription
+            showError.toggle()
+        })
+    }
+    
 }
 
 
@@ -228,6 +267,12 @@ struct LoginView_Previews: PreviewProvider {
 }
 
 extension View {
+    func disableWithOpacity(_ condition: Bool) -> some View {
+        self
+            .disabled(condition)
+            .opacity(condition ? 0.6 : 1.0)
+    }
+    
     func hAlign(_ alignment: Alignment) -> some View {
         self
             .frame(maxWidth: .infinity, alignment: alignment)
