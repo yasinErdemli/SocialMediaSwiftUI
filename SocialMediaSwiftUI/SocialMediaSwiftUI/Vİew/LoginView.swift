@@ -18,6 +18,8 @@ struct LoginView: View {
     @State private var createAccount: Bool = false
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
+    @State private var isLoading: Bool = false
+    @AppStorage("log_status") var logStatus: Bool = false
     var body: some View {
         VStack(spacing: 10) {
             Text("Lets Sign You In")
@@ -70,16 +72,20 @@ struct LoginView: View {
         }
         .vAlign(.top)
         .padding(15)
+        .overlay(content: {
+            LoadingView(show: $isLoading)
+        })
         .fullScreenCover(isPresented: $createAccount) {
             RegisterView()
         }
         .alert(errorMessage, isPresented: $showError, actions: {})
     }
     func loginUser() {
+        isLoading = true
         Task {
             do {
                 try await Auth.auth().signIn(withEmail: email, password: password)
-                print("user found")
+                logStatus = true
             } catch {
                 await setError(error)
             }
@@ -99,6 +105,7 @@ struct LoginView: View {
     
     func setError(_ error: Error) async {
         await MainActor.run(body: {
+            self.isLoading = false
             errorMessage = error.localizedDescription
             showError.toggle()
         })
@@ -117,6 +124,12 @@ struct RegisterView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var errorMessage: String = ""
     @State private var showError: Bool = false
+    @State private var isLoading: Bool = false
+    
+    @AppStorage("log_status") var logStatus: Bool = false
+    @AppStorage("user_profile_url") var userProfileUrl: URL?
+    @AppStorage("user_name") var userNameStored: String = ""
+    @AppStorage("user_UID") var userUID: String = ""
     var body: some View {
         VStack() {
             Text("Let's Register")
@@ -149,7 +162,9 @@ struct RegisterView: View {
             .font(.callout)
         }
         .padding()
-        
+        .overlay(content: {
+            LoadingView(show: $isLoading)
+        })
         .photosPicker(isPresented: $showImagePicker, selection: $photoItem)
         .onChange(of: photoItem) { newValue in
             Task {
@@ -227,6 +242,7 @@ struct RegisterView: View {
     }
     
     func registerUser() {
+        isLoading = true
         Task {
             do {
                 try await Auth.auth().createUser(withEmail: email, password: password)
@@ -241,6 +257,10 @@ struct RegisterView: View {
                 let _ = try Firestore.firestore().collection("Users").document(userUID).setData(from: user, completion: { error in
                     if error == nil {
                         print("Saved Succesfully")
+                        userNameStored = username
+                        self.userUID = userUID
+                        userProfileUrl = downloadURL
+                        logStatus = true
                     }
                 })
             } catch {
@@ -253,6 +273,7 @@ struct RegisterView: View {
         await MainActor.run(body: {
             errorMessage = error.localizedDescription
             showError.toggle()
+            isLoading = false
         })
     }
     
