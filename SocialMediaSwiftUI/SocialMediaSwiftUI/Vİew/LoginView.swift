@@ -20,6 +20,9 @@ struct LoginView: View {
     @State private var errorMessage: String = ""
     @State private var isLoading: Bool = false
     @AppStorage("log_status") var logStatus: Bool = false
+    @AppStorage("user_profile_url") var userProfileUrl: URL?
+    @AppStorage("user_name") var userNameStored: String = ""
+    @AppStorage("user_UID") var userUID: String = ""
     var body: some View {
         VStack(spacing: 10) {
             Text("Lets Sign You In")
@@ -85,11 +88,22 @@ struct LoginView: View {
         Task {
             do {
                 try await Auth.auth().signIn(withEmail: email, password: password)
-                logStatus = true
+                try await fetchUser()
             } catch {
                 await setError(error)
             }
         }
+    }
+    
+    func fetchUser() async throws {
+        guard let userID = Auth.auth().currentUser?.uid else { return }
+        let user = try await Firestore.firestore().collection("users").document(userID).getDocument(as: User.self)
+        await MainActor.run(body: {
+            userUID = userID
+            userProfileUrl = user.userProfileURL
+            userNameStored = user.username
+            logStatus = true
+        })
     }
     
     func resetPassword() {

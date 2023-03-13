@@ -16,7 +16,6 @@
 		7DF30DCA29BA95E300476098 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF30DC929BA95E300476098 /* ContentView.swift */; };
 		7DF30DCC29BA95E400476098 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DF30DCB29BA95E400476098 /* Assets.xcassets */; };
 		7DF30DCF29BA95E400476098 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7DF30DCE29BA95E400476098 /* Preview Assets.xcassets */; };
-		7DF30DD629BA96CD00476098 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7DF30DD529BA96CD00476098 /* GoogleService-Info.plist */; };
 		7DF30DD929BA976000476098 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7DF30DD829BA976000476098 /* FirebaseAuth */; };
 		7DF30DDD29BA981E00476098 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DF30DDC29BA981E00476098 /* LoginView.swift */; };
 /* End PBXBuildFile section */
@@ -29,7 +28,6 @@
 		7DF30DC929BA95E300476098 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7DF30DCB29BA95E400476098 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7DF30DCE29BA95E400476098 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		7DF30DD529BA96CD00476098 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7DF30DDC29BA981E00476098 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,7 +78,6 @@
 				7DF30DC729BA95E300476098 /* SocialMediaSwiftUIApp.swift */,
 				7DF30DC929BA95E300476098 /* ContentView.swift */,
 				7DF30DCB29BA95E400476098 /* Assets.xcassets */,
-				7DF30DD529BA96CD00476098 /* GoogleService-Info.plist */,
 				7DF30DCD29BA95E400476098 /* Preview Content */,
 			);
 			path = SocialMediaSwiftUI;
@@ -180,7 +177,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7DF30DCF29BA95E400476098 /* Preview Assets.xcassets in Resources */,
-				7DF30DD629BA96CD00476098 /* GoogleService-Info.plist in Resources */,
 				7DF30DCC29BA95E400476098 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
