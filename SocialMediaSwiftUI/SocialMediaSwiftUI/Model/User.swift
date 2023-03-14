@@ -19,7 +19,6 @@ struct User: Identifiable, Codable {
     var userProfileURL: URL
     
     enum CodingKeys: CodingKey {
-        case id
         case username
         case userBio
         case userBioLink

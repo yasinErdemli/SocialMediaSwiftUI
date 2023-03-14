@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("log_status") var logStatus: Bool = false
+    @StateObject var viewModel = LoginViewModel()
+    @StateObject var registerViewModel = RegisterViewModel()
     var body: some View {
-        if logStatus {
+        if viewModel.logStatus || registerViewModel.logStatus {
             Text("Main View")
         } else {
-            LoginView()
+            LoginView(viewModel: viewModel, registerViewModel: registerViewModel)
         }
     }
 }
